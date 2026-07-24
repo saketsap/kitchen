@@ -1,0 +1,52 @@
+<mvc:View
+    controllerName="kitchen.inventory.ext.addlooseitem.Controller"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page title="Add Loose Item" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                <Label text="Name"/>
+                <Input value="{/name}" required="true"/>
+
+                <Label text="Category"/>
+                <Input value="{/category}"/>
+
+                <Label text="Current Stock Quantity"/>
+                <Input value="{/currentStockValue}" type="Number"/>
+
+                <Label text="Stock Unit"/>
+                <Select selectedKey="{/baseUnit}">
+                    <core:Item key="G" text="Gram (g)"/>
+                    <core:Item key="ML" text="Millilitre (ml)"/>
+                    <core:Item key="PC" text="Piece (pc)"/>
+                </Select>
+
+                <Label text="Consumption Amount"/>
+                <Input value="{/consumptionAmount}" type="Number"/>
+
+                <Label text="Consumption Unit"/>
+                <Select selectedKey="{/consumptionUnit}">
+                    <core:Item key="G" text="Gram (g)"/>
+                    <core:Item key="ML" text="Millilitre (ml)"/>
+                    <core:Item key="TBSP" text="Tablespoon (tbsp)"/>
+                    <core:Item key="PC" text="Piece (pc)"/>
+                </Select>
+
+                <Label text="Frequency"/>
+                <Select selectedKey="{/consumptionFreq}">
+                    <core:Item key="DAILY" text="Daily"/>
+                    <core:Item key="WEEKLY" text="Weekly"/>
+                </Select>
+            </f:SimpleForm>
+        </content>
+        <footer>
+            <Bar>
+                <contentRight>
+                    <Button text="Save" type="Emphasized" press="onSave"/>
+                </contentRight>
+            </Bar>
+        </footer>
+    </Page>
+</mvc:View>

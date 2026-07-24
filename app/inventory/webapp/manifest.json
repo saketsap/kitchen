@@ -1,0 +1,160 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "kitchen.inventory",
+    "type": "application",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/inventory/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://fridge"
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "kitchen.inventory.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ItemsList",
+          "target": "ItemsList"
+        },
+        {
+          "pattern": "Items({key}):?query:",
+          "name": "ItemsObjectPage",
+          "target": "ItemsObjectPage"
+        },
+        {
+          "pattern": "add-loose-item",
+          "name": "addLooseItem",
+          "target": "AddLooseItemPage"
+        },
+        {
+          "pattern": "scan-barcode",
+          "name": "scanBarcode",
+          "target": "ScanBarcodePage"
+        }
+      ],
+      "targets": {
+        "ItemsList": {
+          "type": "Component",
+          "id": "ItemsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Items",
+              "variantManagement": "Page",
+              "navigation": {
+                "Items": {
+                  "detail": {
+                    "route": "ItemsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "actions": {
+                    "AddLooseItem": {
+                      "id": "AddLooseItemAction",
+                      "text": "{{addLooseItemButton}}",
+                      "press": "kitchen.inventory.ext.controller.ListReportExt.onAddLooseItem"
+                    },
+                    "ScanBarcode": {
+                      "id": "ScanBarcodeAction",
+                      "text": "{{scanBarcodeButton}}",
+                      "press": "kitchen.inventory.ext.controller.ListReportExt.onScanBarcode"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ItemsObjectPage": {
+          "type": "Component",
+          "id": "ItemsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "contextPath": "/Items"
+            }
+          }
+        },
+        "AddLooseItemPage": {
+          "type": "Component",
+          "id": "AddLooseItemPage",
+          "name": "kitchen.inventory.ext.addlooseitem",
+          "options": {
+            "settings": {
+              "entitySet": "Items"
+            }
+          }
+        },
+        "ScanBarcodePage": {
+          "type": "Component",
+          "id": "ScanBarcodePage",
+          "name": "kitchen.inventory.ext.scanner",
+          "options": {
+            "settings": {
+              "entitySet": "Items"
+            }
+          }
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "kitchen.inventory.ext.controller.ListReportExt"
+          }
+        }
+      }
+    }
+  }
+}

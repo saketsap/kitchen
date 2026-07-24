@@ -1,0 +1,65 @@
+<mvc:View
+    controllerName="kitchen.inventory.ext.scanner.Controller"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page title="Scan Barcode" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <VBox visible="{/scanning}" class="sapUiSmallMargin">
+                <core:HTML content="&lt;video id='barcodeVideo' autoplay playsinline style='width:100%;max-width:480px;background:#000'&gt;&lt;/video&gt;"/>
+                <Text text="{/cameraStatus}" class="sapUiSmallMarginTop"/>
+                <f:SimpleForm editable="true" layout="ResponsiveGridLayout" class="sapUiSmallMarginTop">
+                    <Label text="Or enter barcode manually"/>
+                    <Input value="{/barcode}" placeholder="e.g. 3017620422003"/>
+                </f:SimpleForm>
+                <Button text="Look Up" type="Emphasized" press="onManualLookup" class="sapUiSmallMarginTop"/>
+            </VBox>
+
+            <f:SimpleForm visible="{/showConfirmForm}" editable="true" layout="ResponsiveGridLayout">
+                <Label text="Barcode"/>
+                <Text text="{/barcode}"/>
+
+                <Label text="Name"/>
+                <Input value="{/name}" required="true"/>
+
+                <Label text="Category"/>
+                <Input value="{/category}"/>
+
+                <Label text="Current Stock Quantity"/>
+                <Input value="{/currentStockValue}" type="Number"/>
+
+                <Label text="Stock Unit"/>
+                <Select selectedKey="{/baseUnit}">
+                    <core:Item key="G" text="Gram (g)"/>
+                    <core:Item key="ML" text="Millilitre (ml)"/>
+                    <core:Item key="PC" text="Piece (pc)"/>
+                </Select>
+
+                <Label text="Consumption Amount"/>
+                <Input value="{/consumptionAmount}" type="Number"/>
+
+                <Label text="Consumption Unit"/>
+                <Select selectedKey="{/consumptionUnit}">
+                    <core:Item key="G" text="Gram (g)"/>
+                    <core:Item key="ML" text="Millilitre (ml)"/>
+                    <core:Item key="TBSP" text="Tablespoon (tbsp)"/>
+                    <core:Item key="PC" text="Piece (pc)"/>
+                </Select>
+
+                <Label text="Frequency"/>
+                <Select selectedKey="{/consumptionFreq}">
+                    <core:Item key="DAILY" text="Daily"/>
+                    <core:Item key="WEEKLY" text="Weekly"/>
+                </Select>
+            </f:SimpleForm>
+        </content>
+        <footer>
+            <Bar>
+                <contentRight>
+                    <Button text="Save" type="Emphasized" press="onSave" visible="{/showConfirmForm}"/>
+                </contentRight>
+            </Bar>
+        </footer>
+    </Page>
+</mvc:View>
