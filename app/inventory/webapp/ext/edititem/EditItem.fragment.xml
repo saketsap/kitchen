@@ -1,0 +1,50 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog title="Edit Item" contentWidth="28rem">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                <Label text="Name"/>
+                <Input value="{editItem>/name}" required="true"/>
+
+                <Label text="Category"/>
+                <Input value="{editItem>/category}"/>
+
+                <Label text="Barcode"/>
+                <Input value="{editItem>/barcode}"/>
+
+                <Label text="Current Stock Quantity"/>
+                <Input value="{editItem>/currentStockValue}" type="Number"/>
+
+                <Label text="Stock Unit"/>
+                <Select selectedKey="{editItem>/baseUnit}">
+                    <core:Item key="G" text="Gram (g)"/>
+                    <core:Item key="ML" text="Millilitre (ml)"/>
+                    <core:Item key="PC" text="Piece (pc)"/>
+                </Select>
+
+                <Label text="Consumption Amount"/>
+                <Input value="{editItem>/consumptionAmount}" type="Number"/>
+
+                <Label text="Consumption Unit"/>
+                <Select selectedKey="{editItem>/consumptionUnit}">
+                    <core:Item key="G" text="Gram (g)"/>
+                    <core:Item key="ML" text="Millilitre (ml)"/>
+                    <core:Item key="TBSP" text="Tablespoon (tbsp)"/>
+                    <core:Item key="PC" text="Piece (pc)"/>
+                </Select>
+
+                <Label text="Frequency"/>
+                <Select selectedKey="{editItem>/consumptionFreq}">
+                    <core:Item key="DAILY" text="Daily"/>
+                    <core:Item key="WEEKLY" text="Weekly"/>
+                </Select>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button id="saveButton" text="Save" type="Emphasized"/>
+            <Button id="cancelButton" text="Cancel"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

@@ -150,6 +150,34 @@ module.exports = cds.service.impl(function () {
     return Object.assign(updated, computeStatus(updated))
   })
 
+  // Bound action: edit any of an item's own fields at any time (§5 pattern -
+  // invoked from a custom pre-filled dialog, see ext/edititem). Recomputes
+  // dailyConsumptionBase inline (same helper createItem uses) rather than via
+  // a before('UPDATE') hook - an UPDATE() issued from inside another action
+  // handler doesn't re-enter this service's own generic handler pipeline.
+  srv.on('editItem', Items, async (req) => {
+    const key = req.params[0]
+    const {
+      name, category, barcode, currentStockValue, baseUnit,
+      consumptionAmount, consumptionUnit, consumptionFreq
+    } = req.data
+
+    await UPDATE(Items, key).with({
+      name,
+      category: category || null,
+      barcode: barcode || null,
+      currentStockValue,
+      baseUnit,
+      consumptionAmount,
+      consumptionUnit,
+      consumptionFreq,
+      dailyConsumptionBase: computeDailyConsumptionBase({ consumptionAmount, consumptionUnit, consumptionFreq })
+    })
+
+    const updated = await SELECT.one.from(Items, key)
+    return Object.assign(updated, computeStatus(updated))
+  })
+
   // Unbound action: the one legitimate external REST call in this app (§4.4) -
   // calling a *third-party* API from CAP server-side is fine; what's
   // disallowed is exposing our own backend as ad-hoc REST endpoints instead

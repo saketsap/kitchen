@@ -121,7 +121,18 @@
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
-              "contextPath": "/Items"
+              "contextPath": "/Items",
+              "content": {
+                "header": {
+                  "actions": {
+                    "EditItem": {
+                      "id": "EditItemAction",
+                      "text": "{{editItemButton}}",
+                      "press": "kitchen.inventory.ext.controller.ObjectPageExt.onEditItem"
+                    }
+                  }
+                }
+              }
             }
           }
         },

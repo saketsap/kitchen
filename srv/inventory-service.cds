@@ -8,6 +8,23 @@ service InventoryService {
     // acts on one specific Item row - the UI invokes it via bindContext bound
     // to that row's context, per §5.
     action recordStockChange(deltaAmount: Decimal, reason: String) returns Items;
+
+    // Bound action: edit any of an item's own fields at any time. Invoked
+    // from a custom "Edit Item" dialog (Object Page) pre-filled with the
+    // item's current values - not the generic Fiori Elements draft/edit
+    // flow, which hit an unresolved framework issue with this cds-dk/UI5
+    // version combination (draft admin fields never populated). This keeps
+    // "writes go through a CDS action" (§5) without depending on that.
+    action editItem(
+      name              : String,
+      category          : String,
+      barcode           : String,
+      currentStockValue : Decimal,
+      baseUnit          : String,
+      consumptionAmount : Decimal,
+      consumptionUnit   : String,
+      consumptionFreq   : String
+    ) returns Items;
   };
 
   // Unbound function: dashboard summary, called on app launch (§4, §4.3)
