@@ -2,9 +2,11 @@ sap.ui.define([
   "sap/ui/core/mvc/Controller",
   "sap/ui/core/Component",
   "sap/ui/model/json/JSONModel",
+  "sap/ui/model/Filter",
+  "sap/ui/model/FilterOperator",
   "sap/m/MessageToast",
   "sap/m/MessageBox"
-], function (Controller, Component, JSONModel, MessageToast, MessageBox) {
+], function (Controller, Component, JSONModel, Filter, FilterOperator, MessageToast, MessageBox) {
   "use strict";
 
   // This Custom Page is nested one level below the sap.fe app shell - see
@@ -131,7 +133,7 @@ sap.ui.define([
       this._stopStream();
       this._oModel.setProperty("/scanning", false);
       this._oModel.setProperty("/barcode", sBarcode);
-      this._lookupBarcode(sBarcode);
+      this._resolveBarcode(sBarcode);
     },
 
     onManualLookup: function () {
@@ -142,6 +144,32 @@ sap.ui.define([
       }
       this._stopStream();
       this._oModel.setProperty("/scanning", false);
+      this._resolveBarcode(sBarcode);
+    },
+
+    // Checks whether this barcode is already in *our* inventory first (a
+    // plain OData read, not a business action) - a repeat scan of a known
+    // product means restocking, so skip straight to that item's Object Page
+    // where "Log Consumption" is one tap away, instead of re-asking for
+    // name/category/etc. Only fall through to the external lookupBarcode
+    // action (§4.4) when it's genuinely a barcode we haven't seen before.
+    _resolveBarcode: async function (sBarcode) {
+      const oModel = this.getOwnerComponent().getModel();
+      const oListBinding = oModel.bindList("/Items", null, null,
+        new Filter("barcode", FilterOperator.EQ, sBarcode));
+
+      let aContexts = [];
+      try {
+        aContexts = await oListBinding.requestContexts(0, 1);
+      } catch (e) { /* fall through and treat this as a new product */ }
+
+      if (aContexts.length > 0) {
+        const oExisting = aContexts[0].getObject();
+        MessageToast.show("Already in your inventory: " + oExisting.name + " - opening to restock");
+        getAppRouter(this.getView()).navTo("ItemsObjectPage", { key: oExisting.ID });
+        return;
+      }
+
       this._lookupBarcode(sBarcode);
     },
 
