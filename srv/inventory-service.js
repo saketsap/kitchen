@@ -40,19 +40,55 @@ module.exports = cds.service.impl(function () {
   // out whichever the client didn't actually ask for, so the response still
   // honors the requested $select.
   const COMPUTE_INPUTS = ['currentStockValue', 'dailyConsumptionBase']
+  const VIRTUAL_FIELDS = ['criticality', 'status', 'daysRemaining']
 
   srv.before('READ', Items, (req) => {
-    const { columns } = req.query.SELECT
+    const { SELECT } = req.query
+    const { columns, orderBy } = SELECT
     if (!columns) return
     req._stripComputeInputs = COMPUTE_INPUTS.filter((col) => !columns.some((c) => c.ref?.[0] === col))
     for (const col of req._stripComputeInputs) columns.push({ ref: [col] })
+
+    // criticality/status/daysRemaining don't exist as real DB columns - they're
+    // computed below, after the DB query already ran - so the database can't
+    // ORDER BY them (silently ignored, e.g. Fiori Elements' RED-first sort
+    // otherwise does nothing). Pull the sort/pagination out of the DB query
+    // and redo both in JS, after the virtual fields actually exist.
+    if (orderBy?.some((o) => VIRTUAL_FIELDS.includes(o.ref?.[0]))) {
+      req._virtualOrderBy = orderBy.filter((o) => o.ref?.length === 1 && !o.implicit)
+      delete SELECT.orderBy
+      if (SELECT.limit) {
+        req._virtualLimit = SELECT.limit
+        delete SELECT.limit
+      }
+    }
   })
 
   srv.after('READ', Items, (rows, req) => {
-    for (const row of Array.isArray(rows) ? rows : [rows]) {
+    let list = Array.isArray(rows) ? rows : [rows]
+    for (const row of list) {
       if (!row) continue
       Object.assign(row, computeStatus(row))
       for (const col of req._stripComputeInputs || []) delete row[col]
+    }
+
+    if (req._virtualOrderBy) {
+      list.sort((a, b) => {
+        for (const { ref, sort } of req._virtualOrderBy) {
+          const [key] = ref
+          const dir = sort === 'desc' ? -1 : 1
+          if (a[key] < b[key]) return -1 * dir
+          if (a[key] > b[key]) return 1 * dir
+        }
+        return 0
+      })
+      if (req._virtualLimit) {
+        const start = req._virtualLimit.offset?.val || 0
+        const rowsWanted = req._virtualLimit.rows?.val
+        const page = list.slice(start, rowsWanted != null ? start + rowsWanted : undefined)
+        list.length = 0
+        list.push(...page)
+      }
     }
   })
 
