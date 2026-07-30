@@ -47,13 +47,16 @@ annotate InventoryService.Items with @UI: {
     TypeNamePlural: 'Items',
     Title         : { Value: name }
   },
+  // `Importance: #High` on name/status keeps both visible as columns even on
+  // narrow (phone) screens; the rest pop in (stack below) at that width -
+  // sap.m.Table's standard responsive behavior, tuned via this property.
   LineItem: [
-    { Value: name },
-    { Value: category },
-    { Value: currentStockValue },
-    { Value: baseUnit },
+    { Value: name, ![@UI.Importance]: #High },
+    { Value: category, ![@UI.Importance]: #Low },
+    { Value: currentStockValue, ![@UI.Importance]: #Low },
+    { Value: baseUnit, ![@UI.Importance]: #Low },
     { Value: daysRemaining },
-    { Value: status, Criticality: criticality, CriticalityRepresentation: #WithIcon }
+    { Value: status, Criticality: criticality, CriticalityRepresentation: #WithIcon, ![@UI.Importance]: #High }
   ],
   PresentationVariant: {
     SortOrder: [
