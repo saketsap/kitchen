@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kitchen Inventory</title>
+    <style>
+        /* Without an explicit height chain, some browsers/theme-load timings
+           collapse html/body to their content's natural (near-zero) height
+           instead of the viewport, since percentage heights only resolve
+           against an ancestor with an explicit (non-percentage) height. */
+        html, body, #content, #container, #container-uiarea, .sapUiView { height: 100vh !important; margin: 0; }
+    </style>
     <script
         id="sap-ui-bootstrap"
         src="https://ui5.sap.com/resources/sap-ui-core.js"
